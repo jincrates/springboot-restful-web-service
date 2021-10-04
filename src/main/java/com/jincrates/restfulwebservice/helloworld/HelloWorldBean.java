@@ -1,4 +1,4 @@
-package com.jincrates.restfulwebservice.controller;
+package com.jincrates.restfulwebservice.helloworld;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
