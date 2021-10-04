@@ -1,7 +1,7 @@
 package com.jincrates.restfulwebservice.user.controller;
 
 import com.jincrates.restfulwebservice.user.entity.User;
-import com.jincrates.restfulwebservice.user.exception.UserNotFoundException;
+import com.jincrates.restfulwebservice.exception.UserNotFoundException;
 import com.jincrates.restfulwebservice.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
