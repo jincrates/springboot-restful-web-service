@@ -13,5 +13,9 @@ public class HelloWorldController {
         return "Hello World";
     }
 
-
+    // json형식으로 자동으로 변환되어 리턴
+    @GetMapping(path = "/hello-world-bean")
+    public HelloWorldBean helloWorldBean() {
+        return new HelloWorldBean("Hello World");
+    }
 }
