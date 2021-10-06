@@ -45,4 +45,26 @@ public class UserController {
 
         return ResponseEntity.created(location).build();
     }
+
+    @DeleteMapping("/users/{id}")
+    public void deleteUser(@PathVariable int id) {
+        User user = service.deleteById(id);
+
+        if (user == null) {
+            throw new UserNotFoundException(String.format("ID[%s] not found", id));
+        }
+    }
+
+    @DeleteMapping("/users")
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
+        User modUser = service.update(user);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(modUser.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).build();
+    }
+
 }
