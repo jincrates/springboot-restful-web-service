@@ -1,6 +1,7 @@
 # Spring Boot를 이용한 RESTful Web Services 개발
 
 ##### 강의: https://www.inflearn.com/course/spring-boot-restful-web-services/lecture/39073?tab=note
+##### 정리(Notion): https://94jingyu.notion.site/Spring-Boot-RESTful-Web-Services-c9baae01c5a9426b9ce7bf85a40aa5ac
 
 
 ## Section 0: Web Service & Application
