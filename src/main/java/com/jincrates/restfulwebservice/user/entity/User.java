@@ -3,6 +3,7 @@ package com.jincrates.restfulwebservice.user.entity;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.Date;
 @NoArgsConstructor
 //@JsonIgnoreProperties(value={"password", "ssn"})
 @JsonFilter("UserInfo")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
     private Integer id;
 

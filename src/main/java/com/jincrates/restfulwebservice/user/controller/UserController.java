@@ -7,6 +7,8 @@ import com.jincrates.restfulwebservice.user.entity.User;
 import com.jincrates.restfulwebservice.exception.UserNotFoundException;
 import com.jincrates.restfulwebservice.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,12 +51,18 @@ public class UserController {
             throw new UserNotFoundException(String.format("ID[%s] not found", id));
         }
 
+        // HATEOAS
+        EntityModel<User> model = new EntityModel<>(user);
+        WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).retrieveAllUsers());
+        model.add(linkTo.withRel("all-users"));
+
+        //필터링
         SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter
-                .filterOutAllExcept("id", "name", "joinDate", "ssn");
+                .filterOutAllExcept("id", "name", "joinDate", "password");
 
         FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfo", filter);
 
-        MappingJacksonValue mapping = new MappingJacksonValue(user);
+        MappingJacksonValue mapping = new MappingJacksonValue(model);
         mapping.setFilters(filters);
 
         return mapping;
