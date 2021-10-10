@@ -17,7 +17,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.beans.SimpleBeanInfo;
 import java.net.URI;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,15 +32,13 @@ public class AdminUserController {
     public MappingJacksonValue retrieveAllUsers() {
         List<User> users = service.findAll();
 
-        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter
-                .filterOutAllExcept("id", "name", "joinDate", "password");
+        Set<String> filterSet = new HashSet<String>();
+        filterSet.add("id");
+        filterSet.add("name");
+        filterSet.add("joinDate");
+        filterSet.add("password");
 
-        FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfo", filter);
-
-        MappingJacksonValue mapping = new MappingJacksonValue(users);
-        mapping.setFilters(filters);
-
-        return mapping;
+        return customFilter(filterSet, "UserInfo", users);
     }
 
     // GET /admin/users/1 -> /admin/v1/users/1
@@ -50,16 +50,13 @@ public class AdminUserController {
             throw new UserNotFoundException(String.format("ID[%s] not found", id));
         }
 
+        Set<String> filterSet = new HashSet<String>();
+        filterSet.add("id");
+        filterSet.add("name");
+        filterSet.add("joinDate");
+        filterSet.add("ssn");
 
-        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter
-                .filterOutAllExcept("id", "name", "joinDate", "ssn");
-
-        FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfo", filter);
-
-        MappingJacksonValue mapping = new MappingJacksonValue(user);
-        mapping.setFilters(filters);
-
-        return mapping;
+        return customFilter(filterSet, "UserInfo", user);
     }
 
     @GetMapping("/v2/users/{id}")
@@ -75,12 +72,22 @@ public class AdminUserController {
         BeanUtils.copyProperties(user, userV2); // id, name, joinDate, password, ssm
         userV2.setGrade("VIP");
 
-        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter
-                .filterOutAllExcept("id", "name", "joinDate", "grade");
+        Set<String> filterSet = new HashSet<String>();
+        filterSet.add("id");
+        filterSet.add("name");
+        filterSet.add("joinDate");
+        filterSet.add("grade");
 
-        FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfoV2", filter);
+        return customFilter(filterSet, "UserInfoV2", userV2);
+    }
 
-        MappingJacksonValue mapping = new MappingJacksonValue(userV2);
+    public MappingJacksonValue customFilter(Set<String> setting, String id, Object obj) {
+
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept(setting);
+
+        FilterProvider filters = new SimpleFilterProvider().addFilter(id, filter);
+
+        MappingJacksonValue mapping = new MappingJacksonValue(obj);
         mapping.setFilters(filters);
 
         return mapping;
