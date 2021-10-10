@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.jincrates.restfulwebservice.exception.UserNotFoundException;
 import com.jincrates.restfulwebservice.user.entity.User;
+import com.jincrates.restfulwebservice.user.entity.UserV2;
 import com.jincrates.restfulwebservice.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.*;
@@ -25,13 +27,23 @@ public class AdminUserController {
 
     //전체 사용자 조회
     @GetMapping("/users")
-    public List<User> retrieveAllUsers() {
-        return service.findAll();
+    public MappingJacksonValue retrieveAllUsers() {
+        List<User> users = service.findAll();
+
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter
+                .filterOutAllExcept("id", "name", "joinDate", "password");
+
+        FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfo", filter);
+
+        MappingJacksonValue mapping = new MappingJacksonValue(users);
+        mapping.setFilters(filters);
+
+        return mapping;
     }
 
-    // GET /users/1 or /users/10 -> String로 전달되지만 매개변수의 타입을 int로 하면 자동 형변환 처리됨
-    @GetMapping("/users/{id}")
-    public MappingJacksonValue retrieveUser(@PathVariable int id) {
+    // GET /admin/users/1 -> /admin/v1/users/1
+    @GetMapping("/v1/users/{id}")
+    public MappingJacksonValue retrieveUserV1(@PathVariable int id) {
         User user = service.findOne(id);
 
         if (user == null) {
@@ -50,16 +62,27 @@ public class AdminUserController {
         return mapping;
     }
 
-    @DeleteMapping("/users")
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
-        User modUser = service.update(user);
+    @GetMapping("/v2/users/{id}")
+    public MappingJacksonValue retrieveUserV2(@PathVariable int id) {
+        User user = service.findOne(id);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(modUser.getId())
-                .toUri();
+        if (user == null) {
+            throw new UserNotFoundException(String.format("ID[%s] not found", id));
+        }
 
-        return ResponseEntity.created(location).build();
+        // User -> UserV2
+        UserV2 userV2 = new UserV2();
+        BeanUtils.copyProperties(user, userV2); // id, name, joinDate, password, ssm
+        userV2.setGrade("VIP");
+
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter
+                .filterOutAllExcept("id", "name", "joinDate", "grade");
+
+        FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfoV2", filter);
+
+        MappingJacksonValue mapping = new MappingJacksonValue(userV2);
+        mapping.setFilters(filters);
+
+        return mapping;
     }
-
 }
