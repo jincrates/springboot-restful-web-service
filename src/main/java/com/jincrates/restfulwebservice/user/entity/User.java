@@ -1,5 +1,7 @@
 package com.jincrates.restfulwebservice.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -9,6 +11,7 @@ import java.util.Date;
 
 @Data
 @AllArgsConstructor
+@JsonIgnoreProperties(value={"password", "ssn"})
 public class User {
     private Integer id;
 
@@ -16,4 +19,10 @@ public class User {
     private String name;
     @Past
     private Date joinDate;
+
+    //@JsonIgnore
+    private String password;
+
+    //@JsonIgnore
+    private String ssn;
 }
