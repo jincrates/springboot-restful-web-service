@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.Date;
 //@JsonIgnoreProperties(value={"password", "ssn"})
 @JsonFilter("UserInfo")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(description = "사용자 상세 정보를 위한 도메인 객체")
 public class User {
     private Integer id;
 
