@@ -25,7 +25,7 @@ public class SwaggerConfig {
 
     private static final ApiInfo DEFAULT_API_INFO = new ApiInfo("Awesome API Title",
             "My User Management REST API Service", "1.0", "urn:tos",
-            DEFAULT_CONTACT, "Apache 2.0", "http://wwww.apache.org/linceses/LICENSE2.0",
+            DEFAULT_CONTACT, "Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0",
             new ArrayList<>());
 
     private static final Set<String> DEFAULT_PRODUCES_AND_CONSUMES = new HashSet<>(
@@ -37,5 +37,13 @@ public class SwaggerConfig {
                 .apiInfo(DEFAULT_API_INFO)
                 .produces(DEFAULT_PRODUCES_AND_CONSUMES)
                 .consumes(DEFAULT_PRODUCES_AND_CONSUMES);
+    }
+
+    @Primary
+    @Bean
+    public LinkDiscoverers discoverers() {
+        List<LinkDiscoverer> plugins = new ArrayList<>();
+        plugins.add(new CollectionJsonLinkDiscoverer());
+        return new LinkDiscoverers(SimplePluginRegistry.create(plugins));
     }
 }

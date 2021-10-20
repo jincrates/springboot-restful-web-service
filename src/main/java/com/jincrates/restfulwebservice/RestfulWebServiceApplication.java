@@ -29,4 +29,6 @@ public class RestfulWebServiceApplication {
 
 		return localeResolver;
 	}
+
+
 }
